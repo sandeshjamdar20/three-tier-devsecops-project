@@ -1,40 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
-  namespace: three-tier
+metadata:
   name: postgres
-spec: 
+  namespace: three-tier
+
+spec:
   replicas: 1
   selector:
     matchLabels:
       app: postgres
+
   template:
     metadata:
-      labels: 
+      labels:
         app: postgres
-    spec: 
+
+    spec:
       containers:
       - name: postgres
-        image: image: postgres:16
+        image: postgres:16
         ports:
         - containerPort: 5432
-        env: 
-          - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                name: postgres-sec
-                key: username
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: postgres-sec
-                key: password
-          - name: POSTGRES_DB
-            value: mydatabase
+
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-sec
+              key: username
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-sec
+              key: password
+
+        - name: POSTGRES_DB
+          value: mydatabase
+
         volumeMounts:
-          - name: postgres-volume
-            mountPath: /var/lib/postgresql/data
-      volumes: 
+        - name: postgres-volume
+          mountPath: /var/lib/postgresql/data
+
+      volumes:
       - name: postgres-volume
         persistentVolumeClaim:
           claimName: postgres-volume-claim
