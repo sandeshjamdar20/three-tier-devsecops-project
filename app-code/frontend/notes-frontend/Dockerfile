@@ -1,21 +1,26 @@
-# frontend/Dockerfile
+# Use Node.js 18 Alpine image
 FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json /app/
-RUN npm install
+# Copy package files
+COPY package*.json ./
 
-# Copy the rest of the application files
-COPY . /app/
+# Install dependencies using package-lock.json
+RUN npm ci
 
-# Build the React app
+# Copy application source code
+COPY . .
+
+# Build the React application
 RUN npm run build
 
-# Expose port 3000
+# Install serve package
+RUN npm install -g serve
+
+# Expose application port
 EXPOSE 3000
 
-# Serve the built files
-CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+# Start the application
+CMD ["serve", "-s", "build", "-l", "3000"]
